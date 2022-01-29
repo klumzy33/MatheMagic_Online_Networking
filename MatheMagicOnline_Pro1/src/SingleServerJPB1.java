@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.HashMap;
+import java.io.*;
 
 
 
@@ -110,10 +111,12 @@ public class SingleServerJPB1 {
                         System.out.println("Sending solve to client");
                         //get solve command details
                         String shape= currencies[1];
+                        float redius, circumference,length, length2,perimeter, area;
                         
                         //create a solve file
                         try {
                           File solveFile = new File(userName+"_solutions.txt");
+         
                           if (solveFile.createNewFile()) {
                             System.out.println("File created: " + solveFile.getName());
                           } else {
@@ -122,28 +125,55 @@ public class SingleServerJPB1 {
                         } catch (IOException e) {
                           System.out.println("An error occurred.");
                           e.printStackTrace();
-                        }
-                        
+                        } 
+                    
                         if(shape.equalsIgnoreCase("-c"))
                         {
                             if(currencies.length==3)
                             {
-                                float redius= Float.parseFloat(currencies[2]);
-                                float circumference= (float)(Math.PI*2*(redius));
-                                float area= (float) (Math.PI * Math.pow(redius, 2));
+                                redius= Float.parseFloat(currencies[2]);
+                                circumference= (float)(Math.PI*2*(redius));
+                                area= (float) (Math.PI * Math.pow(redius, 2));
          
                                 outputToClient.writeUTF("Circle’s circumference is "+
                                         String.format("%.2f", circumference)
-                                        + " and area is "+ String.format("%.2f" ,area));
+                                        + " and area is "+ String.format("%.2f" ,area));                          
                             }
                             else
                             {
                                 outputToClient.writeUTF("Error: No radius found");
-                            }
-                            
+                            }  
                         }
-                        
+                        else if(shape.equalsIgnoreCase("-r"))
+                        {
+                            if(currencies.length==3)
+                            {
+                                length= Float.parseFloat(currencies[2]);
+                                perimeter= (float)(4 * length);
+                                area= (float) (Math.pow(length, 2));
+         
+                                outputToClient.writeUTF("Rectangle’s perimeter is "+
+                                        String.format("%.2f", perimeter)
+                                        + " and area is "+ String.format("%.2f" ,area));                          
+                            }
+                            else if(currencies.length==4)
+                            {
+                                length= Float.parseFloat(currencies[2]);
+                                length2= Float.parseFloat(currencies[3]);
+                                perimeter= (float)(2*(length+length2));
+                                area= (float) (length*length2);
+         
+                                outputToClient.writeUTF("Rectangle’s perimeter is "+
+                                        String.format("%.2f", perimeter)
+                                        + " and area is "+ String.format("%.2f" ,area));                          
+                            }
+                            else
+                            {
+                                outputToClient.writeUTF("Error: No radius found");
+                            }     
+                        }          
                     }
+                    
                     else if(strReceived.equalsIgnoreCase("quit")) {
                         System.out.println("Shutting down server...");
                         outputToClient.writeUTF("Shutting down server...");

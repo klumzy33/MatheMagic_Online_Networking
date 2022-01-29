@@ -1,0 +1,3 @@
+Circle’s circumference is 12.57 and area is 12.57
+Circle’s circumference is 213.63 and area is 3631.68
+Error: No radius foundCircle’s circumference is 8.00 and area is 4.00

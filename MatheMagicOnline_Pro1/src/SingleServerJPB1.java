@@ -71,6 +71,7 @@ public class SingleServerJPB1 {
             //and responding
             while(true) 
             {
+                
                 //login first
                 String strReceived= inputFromClient.readUTF();
                 currencies = strReceived.split(" ");
@@ -92,16 +93,17 @@ public class SingleServerJPB1 {
                                outputToClient.writeUTF("You can access the server"); 
                                authorizedUser=true;
                             }
+                            else{
+                                outputToClient.writeUTF("Your login info is incorrect"); 
+                            }
                         }
                         else{
                             outputToClient.writeUTF("Your login info is incorrect"); 
-                        }
-                       
+                        }                       
                     }
                     else{
                           outputToClient.writeUTF("You need to sign in first");  
                     }
-
                 }
                 
                 else{
@@ -113,81 +115,95 @@ public class SingleServerJPB1 {
                         String shape= currencies[1];
                         float redius, circumference,length, length2,perimeter, area;
                         
-                        //create a solve file
-                        try {
-                          File solveFile = new File(userName+"_solutions.txt");
-         
-                          if (solveFile.createNewFile()) {
+                    //create a solve file 
+                    File solveFile = new File(userName+"_solutions.txt");
+                   
+                    if(solveFile.exists()==false){
                             System.out.println("File created: " + solveFile.getName());
-                          } else {
-                            System.out.println("File already exists.");
-                          }
-                        } catch (IOException e) {
-                          System.out.println("An error occurred.");
-                          e.printStackTrace();
-                        } 
-                    
-                        if(shape.equalsIgnoreCase("-c"))
-                        {
-                            if(currencies.length==3)
-                            {
-                                redius= Float.parseFloat(currencies[2]);
-                                circumference= (float)(Math.PI*2*(redius));
-                                area= (float) (Math.PI * Math.pow(redius, 2));
-         
-                                outputToClient.writeUTF("Circle’s circumference is "+
-                                        String.format("%.2f", circumference)
-                                        + " and area is "+ String.format("%.2f" ,area));                          
-                            }
-                            else
-                            {
-                                outputToClient.writeUTF("Error: No radius found");
-                            }  
-                        }
-                        else if(shape.equalsIgnoreCase("-r"))
-                        {
-                            if(currencies.length==3)
-                            {
-                                length= Float.parseFloat(currencies[2]);
-                                perimeter= (float)(4 * length);
-                                area= (float) (Math.pow(length, 2));
-         
-                                outputToClient.writeUTF("Rectangle’s perimeter is "+
-                                        String.format("%.2f", perimeter)
-                                        + " and area is "+ String.format("%.2f" ,area));                          
-                            }
-                            else if(currencies.length==4)
-                            {
-                                length= Float.parseFloat(currencies[2]);
-                                length2= Float.parseFloat(currencies[3]);
-                                perimeter= (float)(2*(length+length2));
-                                area= (float) (length*length2);
-         
-                                outputToClient.writeUTF("Rectangle’s perimeter is "+
-                                        String.format("%.2f", perimeter)
-                                        + " and area is "+ String.format("%.2f" ,area));                          
-                            }
-                            else
-                            {
-                                outputToClient.writeUTF("Error: No radius found");
-                            }     
-                        }          
+                            solveFile.createNewFile();
                     }
-                    
-                    else if(strReceived.equalsIgnoreCase("quit")) {
-                        System.out.println("Shutting down server...");
-                        outputToClient.writeUTF("Shutting down server...");
-                        serverSocket.close();//close the server
-                        socket.close();      //then close the client
-                        break;  //get out of loop
-                    }
-                    else {
-                        System.out.println("Unknown command received: " 
-                            + strReceived);
-                        outputToClient.writeUTF("Unknown command.  "
-                                + "Please try again.");
+                    PrintWriter write = new PrintWriter(new FileWriter(solveFile, true));
+   
+                    if(shape.equalsIgnoreCase("-c"))
+                    {
+                        if(currencies.length==3)
+                        {
+                            redius= Float.parseFloat(currencies[2]);
+                            circumference= (float)(Math.PI*2*(redius));
+                            area= (float) (Math.PI * Math.pow(redius, 2));
+
+                            write.append("Circle’s circumference is "+
+                                    String.format("%.2f", circumference)
+                                    + " and area is "+ String.format("%.2f" ,area)+"\n");
+                            outputToClient.writeUTF("Circle’s circumference is "+
+                                    String.format("%.2f", circumference)
+                                    + " and area is "+ String.format("%.2f" ,area));                          
                         }
-                    } 
+                        else
+                        {
+                            write.append("Error: No radius found");
+                            outputToClient.writeUTF("Error: No radius found\n");
+                        }  
+                    }
+                    else if(shape.equalsIgnoreCase("-r"))
+                    {
+                        if(currencies.length==3)
+                        {
+                            length= Float.parseFloat(currencies[2]);
+                            perimeter= (float)(4 * length);
+                            area= (float) (Math.pow(length, 2));
+
+                            write.append("Circle’s circumference is "+
+                                    String.format("%.2f", perimeter)
+                                    + " and area is "+ String.format("%.2f" ,area)+"\n");
+                            outputToClient.writeUTF("Rectangle’s perimeter is "+
+                                    String.format("%.2f", perimeter)
+                                    + " and area is "+ String.format("%.2f" ,area));                          
+                        }
+                        else if(currencies.length==4)
+                        {
+                            length= Float.parseFloat(currencies[2]);
+                            length2= Float.parseFloat(currencies[3]);
+                            perimeter= (float)(2*(length+length2));
+                            area= (float) (length*length2);
+
+                            write.append("Circle’s circumference is "+
+                                    String.format("%.2f", perimeter)
+                                    + " and area is "+ String.format("%.2f" ,area)+"\n");
+                            outputToClient.writeUTF("Rectangle’s perimeter is "+
+                                    String.format("%.2f", perimeter)
+                                    + " and area is "+ String.format("%.2f" ,area));                          
+                        }
+                        else
+                        {
+                            write.append("Error: No radius found");
+                            outputToClient.writeUTF("Error: No sides found\n");
+                        }     
+                    }  
+                     write.close();
+                }
+
+                else if(strReceived.equalsIgnoreCase("quit")) {
+                    System.out.println("Shutting down server...");
+                    outputToClient.writeUTF("Shutting down server...");
+                    serverSocket.close();//close the server
+                    socket.close();      //then close the client
+                    break;  //get out of loop
+                }
+
+               /* else if(command.equalsIgnoreCase("logout")) {
+                    //System.out.println("Shutting down server...");
+                    outputToClient.writeUTF("200 OK");
+                    authorizedUser=false; 
+                    socket.close();      //then close the client                       
+                }*/
+                else {
+                    System.out.println("Unknown command received: " 
+                        + strReceived);
+                    outputToClient.writeUTF("Unknown command.  "
+                            + "Please try again.");
+                    }
+                } 
             }//end server loop
         }
         catch(IOException ex) {

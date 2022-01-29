@@ -11,6 +11,7 @@ import java.util.Scanner;
 import java.util.HashMap;
 
 
+
 public class SingleServerJPB1 {
     
     private static final int SERVER_PORT = 8765;
@@ -44,6 +45,7 @@ public class SingleServerJPB1 {
     public static void createCommunicationLoop(HashMap<String, String> loginsInfo) {
         boolean authorizedUser=false;
         String[] currencies;
+        String userName="", pwd="";
         
         try {
             //create server socket
@@ -70,18 +72,22 @@ public class SingleServerJPB1 {
             {
                 //login first
                 String strReceived= inputFromClient.readUTF();
+                currencies = strReceived.split(" ");
+                String command=currencies[0];
 
                 if (authorizedUser==false)
                 {
-                    if(strReceived.contains("LOGIN"))
+                    if(command.equalsIgnoreCase("login"))
                     {
-                        currencies = strReceived.split(" ");
-//                        System.out.println(currencies[1]);
-//                        System.out.println(currencies[2]);
-
-                        if(loginsInfo.containsKey(currencies[1]))
+                        userName=currencies[1];
+                        pwd=currencies[2];
+//                        System.out.println(currencies[1] + " " + currencies[2]);
+                        
+                        //check if username exist
+                        if(loginsInfo.containsKey(userName))
                         {
-                            if(loginsInfo.get(currencies[1]).equals(currencies[2])){
+                            //check if its is the right password for that usename
+                            if(loginsInfo.get(userName).equals(pwd)){
                                outputToClient.writeUTF("You can access the server"); 
                                authorizedUser=true;
                             }
@@ -99,9 +105,44 @@ public class SingleServerJPB1 {
                 
                 else{
                     //solve command
-                    if(strReceived.equalsIgnoreCase("solve")) {
-                    System.out.println("Sending solve to client");
-                    outputToClient.writeUTF("hello client!");
+                    if(command.equalsIgnoreCase("solve")) 
+                    {
+                        System.out.println("Sending solve to client");
+                        //get solve command details
+                        String shape= currencies[1];
+                        
+                        //create a solve file
+                        try {
+                          File solveFile = new File(userName+"_solutions.txt");
+                          if (solveFile.createNewFile()) {
+                            System.out.println("File created: " + solveFile.getName());
+                          } else {
+                            System.out.println("File already exists.");
+                          }
+                        } catch (IOException e) {
+                          System.out.println("An error occurred.");
+                          e.printStackTrace();
+                        }
+                        
+                        if(shape.equalsIgnoreCase("-c"))
+                        {
+                            if(currencies.length==3)
+                            {
+                                float redius= Float.parseFloat(currencies[2]);
+                                float circumference= (float)(Math.PI*2*(redius));
+                                float area= (float) (Math.PI * Math.pow(redius, 2));
+         
+                                outputToClient.writeUTF("Circle’s circumference is "+
+                                        String.format("%.2f", circumference)
+                                        + " and area is "+ String.format("%.2f" ,area));
+                            }
+                            else
+                            {
+                                outputToClient.writeUTF("Error: No radius found");
+                            }
+                            
+                        }
+                        
                     }
                     else if(strReceived.equalsIgnoreCase("quit")) {
                         System.out.println("Shutting down server...");

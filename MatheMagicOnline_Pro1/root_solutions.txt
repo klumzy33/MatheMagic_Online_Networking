@@ -1,3 +1,11 @@
 Circle’s circumference is 12.57 and area is 12.57
 Circle’s circumference is 213.63 and area is 3631.68
 Error: No radius foundCircle’s circumference is 8.00 and area is 4.00
+Circle’s circumference is 144.51 and area is 1661.90
+Circle’s circumference is 483.81 and area is 18626.50
+Circle’s circumference is 10.00 and area is 6.00
+Circle’s circumference is 18.85 and area is 28.27
+Error: No radius foundCircle’s circumference is 25.13 and area is 50.27
+Error: No radius foundCircle’s circumference is 28.00 and area is 49.00
+Circle’s circumference is 14.00 and area is 12.00
+Redius 2.0: Circle’s circumference is 12.57 and area is 12.57

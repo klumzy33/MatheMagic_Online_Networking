@@ -3,3 +3,4 @@ Circle’s circumference is 16.00 and area is 15.00
 Circle’s circumference is 138.23 and area is 1520.53
 Circle’s circumference is 4.00 and area is 1.00
 Redius 3.0: Circle’s circumference is 18.85 and area is 28.27
+Redius 8.0: Circle’s circumference is 50.27 and area is 201.06

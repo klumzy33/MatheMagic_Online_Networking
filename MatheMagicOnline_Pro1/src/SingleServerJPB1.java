@@ -136,11 +136,11 @@ public class SingleServerJPB1 {
                                         + " and area is "+ String.format("%.2f" ,area)+"\n");
                                 outputToClient.writeUTF("Redius "+redius+": Circle’s circumference is "+
                                         String.format("%.2f", circumference)
-                                        + " and area is "+ String.format("%.2f" ,area));                          
+                                        + " and area is "+ String.format("%.2f" ,area)+"\n");                          
                             }
                             else
                             {
-                                write.append("Error: No radius found");
+                                write.append("Error: No radius found\n");
                                 outputToClient.writeUTF("Error: No radius found\n");
                             }  
                         }
@@ -157,7 +157,7 @@ public class SingleServerJPB1 {
                                         + " and area is "+ String.format("%.2f" ,area)+"\n");
                                 outputToClient.writeUTF("Side "+length+" "+length+": Rectangle’s perimeteris "+
                                         String.format("%.2f", perimeter)
-                                        + " and area is "+ String.format("%.2f" ,area));                          
+                                        + " and area is "+ String.format("%.2f" ,area)+"\n");                          
                             }
                             else if(currencies.length==4)
                             {
@@ -171,11 +171,11 @@ public class SingleServerJPB1 {
                                         + " and area is "+ String.format("%.2f" ,area)+"\n");
                                 outputToClient.writeUTF("Side "+length+" "+length2+": Rectangle’s perimeteris "+
                                         String.format("%.2f", perimeter)
-                                        + " and area is "+ String.format("%.2f" ,area));                            
+                                        + " and area is "+ String.format("%.2f" ,area)+"\n");                            
                             }
                             else
                             {
-                                write.append("Error: No radius found");
+                                write.append("Error: No radius found\n");
                                 outputToClient.writeUTF("Error: No sides found\n");
                             }     
                         }  
@@ -186,30 +186,57 @@ public class SingleServerJPB1 {
                     else if(command.equalsIgnoreCase("list")) 
                     {
                       System.out.println("Sending LIST to client");
+                      //append all data to string then send it to the client
+                      String fileContent="";
                        
                         if(currencies.length==1)
                        {
                            File myObj = new File(userName+"_solutions.txt");
                            Scanner myReader = new Scanner(myObj);
-                           outputToClient.writeUTF(userName+"\n");
+                           fileContent= userName+"\n";
                            while (myReader.hasNextLine()) 
                            {
                                 String data = myReader.nextLine();
-                                outputToClient.writeUTF(data);
+                                fileContent+=data+"\n";
                            }
+                           outputToClient.writeUTF(fileContent);
                            myReader.close();                     
                        }
-                        else if(currencies.length==2){
+                        //not sure if need to validate all that, if not, length is
+                        //enough to know that it is list -all
+                        else if(currencies.length==2)
+                        {
                             //String allFlag= currencies[1];
                             if(userName.equals("root")){
-                                outputToClient.writeUTF("You can access all files");
-                                //go over the hash map, then open files based on the key value. 
+                                for (String userFile : loginsInfo.keySet())
+                                {
+                                    //go over keys in hashmap, then open file for each
+                                    //get content of the file and append it to the string
+                                    //finally, send the string to client side                               
+                                    File myObj = new File(userFile+"_solutions.txt");                                 
+                                    fileContent+= userFile+"\n";
+                                    if (myObj.exists()){
+                                        Scanner myReader = new Scanner(myObj);
+                                        System.out.println(myObj.exists());
+                                        while (myReader.hasNextLine()) 
+                                        {
+                                             String data = myReader.nextLine();
+                                             fileContent+=data+"\n";
+                                        }
+                                         myReader.close();
+                                    }
+                                    else{
+                                        fileContent+= "No interactions yet\n";
+                                    }                                  
+                                }   
+                                outputToClient.writeUTF(fileContent);                              
                             }
                             else{
-                                outputToClient.writeUTF("You cannot access all files");
+                                outputToClient.writeUTF("Error: you are not the root user\n");
                             }
                        }                   
                 }
+                 //end list command   
                     
                 else if(strReceived.equalsIgnoreCase("quit")) {
                     System.out.println("Shutting down server...");
